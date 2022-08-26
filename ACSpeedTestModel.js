@@ -29,6 +29,10 @@ export default class ACSpeedTestModel {
         }
     }
 
+    async testHost(host) {
+        return this._request(host);
+    }
+
     /**
      * 传入一组hosts即可 测试它们的访问速度返回数据如下
      * [{

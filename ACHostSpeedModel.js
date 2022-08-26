@@ -41,6 +41,10 @@ export default class ACHostSpeedModel {
         }
     }
 
+    async testSpecificHost(host) {
+        return this.speedTestModel.testHost(host);
+    }
+
     async sortByAccessSpeed() {
         const results = await this.speedTestModel.testAll(this._hosts);
         const availableResults = results.filter(result => result.available);
