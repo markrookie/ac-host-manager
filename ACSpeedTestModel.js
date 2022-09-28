@@ -66,16 +66,20 @@ export default class ACSpeedTestModel {
             };
             http.onload = function() {
                 if (200 <= this.status && this.status < 300) {
-                    const endTime = new Date().getTime();
-                    const frontEndDelay = endTime - startTime;
-                    const result = JSON.parse(this.response);
-                    const { server_load, backend_delay: backEndDelay } = result;
-                    // 前端访问代理机器的delay + 代理机到服务器的delay就是用户到服务器的延迟
-                    const totalDelay = frontEndDelay + backEndDelay;
-                    if (server_load === 'normal') {
-                        resolve({host, available: true, message: 'this_host_is_ok', delay: totalDelay});
-                    } else {
-                        resolve({host, available: false, message: 'this_host_is_forbidden', delay: totalDelay});
+                    try {
+                        const endTime = new Date().getTime();
+                        const frontEndDelay = endTime - startTime;
+                        const result = JSON.parse(this.response);
+                        const { server_load, backend_delay: backEndDelay } = result;
+                        // 前端访问代理机器的delay + 代理机到服务器的delay就是用户到服务器的延迟
+                        const totalDelay = frontEndDelay + backEndDelay;
+                        if (server_load === 'normal') {
+                            resolve({host, available: true, message: 'this_host_is_ok', delay: totalDelay});
+                        } else {
+                            resolve({host, available: false, message: 'this_host_is_forbidden', delay: totalDelay});
+                        }
+                    } catch (error) {
+                        resolve({host, available: false, message: error.message});
                     }
                 } else if (300 <= this.status && this.status < 400) {
                     resolve({host, available: false, message: 'request_error'});
