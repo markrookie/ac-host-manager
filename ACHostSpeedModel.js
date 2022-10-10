@@ -33,22 +33,31 @@ export default class ACHostSpeedModel {
         try {
             // 第一次请求最快Host，如果有直接返回
             const fastestResult = await this.speedTestModel.testFastest(this._hosts);
-            if (fastestResult && fastestResult.available && fastestResult.delay < 1000) {
-                return fastestResult;
+            if (fastestResult) {
+                if (fastestResult.available && fastestResult.delay < 1000) {
+                    return fastestResult;
+                } else {
+                    this.removeInvalidHost(fastestResult.host);
+                }
             }
-            this.removeInvalidHost(fastestResult.host);
             // 进行第二次请求最快Host，如果有直接返回
             const fastestResult2 = await this.speedTestModel.testFastest(this._hosts);
-            if (fastestResult2 && fastestResult2.available && fastestResult2.delay < 2000) {
-                return fastestResult2;
+            if (fastestResult2) {
+                if (fastestResult2.available && fastestResult2.delay < 2000) {
+                    return fastestResult2;
+                } else {
+                    this.removeInvalidHost(fastestResult2.host);
+                }
             }
-            this.removeInvalidHost(fastestResult2.host);
             // 进行第三次请求最快Host，如果有直接返回
             const fastestResult3 = await this.speedTestModel.testFastest(this._hosts);
-            if (fastestResult3 && fastestResult3.available && fastestResult3.delay < 2000) {
-                return fastestResult3;
+            if (fastestResult3) {
+                if (fastestResult3.available && fastestResult3.delay < 2000) {
+                    return fastestResult3;
+                } else {
+                    this.removeInvalidHost(fastestResult3.host);
+                }
             }
-            this.removeInvalidHost(fastestResult3.host);
             // 三次请求最快Host失败后，把所有Host按访问速度排序
             const sortedResults = await this.sortByAccessSpeed();
             if (sortedResults.length === 0) {
