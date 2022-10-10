@@ -11,22 +11,31 @@
 export default class ACSpeedTestModel {
 
     async testFastest(hosts) {
-        try {
+        return new Promise((resolve, reject) => {
             if (!(hosts instanceof Array)) {
-                return undefined;
+                resolve(undefined);
+                return;
             }
             if (hosts.length === 0) {
-                return undefined;
+                resolve(undefined);
+                return;
             }
-            const requests = hosts.map(host => this._request(host));
-            const fastestResult = await Promise.race(requests);
-            if (fastestResult) {
-                return fastestResult;
-            }
-            return undefined;
-        } catch (error) {
-            throw error;
-        }
+            let isCompleted = false;
+            let testAmount = 0;
+            hosts.forEach((host) => {
+                this._request(host).then((result) => {
+                    if (result.available && result.delay < 2000 && !isCompleted) {
+                        isCompleted = true;
+                        resolve(result);
+                    } else {
+                        testAmount += 1;
+                        if (testAmount === hosts.length) {
+                            resolve(undefined);
+                        }
+                    }
+                });
+            });
+        });
     }
 
     async testHost(host) {
